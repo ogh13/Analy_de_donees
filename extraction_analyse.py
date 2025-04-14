@@ -1,13 +1,12 @@
-# Importation des bibliothèques nécessaires
-import sqlite3  # Pour se connecter à la base de données
-import pandas as pd  # Pour travailler avec des tableaux de données
 
-## Étape 1 : Connexion à la base de données
+import sqlite3  
+import pandas as pd 
+
+
 print("Connexion à la base de données...")
 conn = sqlite3.connect("ventes_magasin.db")
 
-## Étape 2 : Extraction des données principales
-
+#Extraction des données de la base de données
 # 1. Données complètes des ventes
 print("Extraction des données de ventes...")
 requete_ventes = """
@@ -79,7 +78,7 @@ print("- Nombre de clients :", len(clients_df))
 print("- Produits jamais vendus :", len(produits_non_vendus))
 print("- Années analysées :", ventes_par_annee['annee'].tolist())
 
-## Étape 5 : Sauvegarde des DataFrames
+
 print("\nSauvegarde des données...")
 toutes_les_donnees = {
     "ventes": ventes_df,
@@ -88,12 +87,12 @@ toutes_les_donnees = {
     "categories": categories_df,
     "produits_non_vendus": produits_non_vendus,
     "ventes_par_mois": ventes_par_mois,
-    "ventes_par_annee": ventes_par_annee  # NOUVEAU
+    "ventes_par_annee": ventes_par_annee 
 }
 
 
 
-## Étape 6 : Fermeture
+
 conn.close()
 print("\nExtraction terminée avec succès!")
 print("DataFrames disponibles :")
@@ -106,10 +105,9 @@ print("- ventes_par_annee (nouveau)")
 
 
 
-# Chargement des données extraites (depuis les DataFrames existants)
+# Analyses et calculs avec les DataFrames existants
 print("Début de l'analyse statistique...")
 
-## 1. Analyse de base ---------------------------------------------------------
 print("\n" + "="*50)
 print("ANALYSES DE BASE")
 print("="*50)
@@ -126,7 +124,7 @@ print(f"2. Panier moyen : {panier_moyen:.2f} FCFA")
 moyenne_articles = ventes_df['quantite'].mean()
 print(f"3. Nombre moyen d'articles par vente : {moyenne_articles:.1f}")
 
-## 2. Analyse par produit -----------------------------------------------------
+#Analyse réalisée sur les produits 
 print("\n" + "="*50)
 print("ANALYSE PAR PRODUIT")
 print("="*50)
@@ -150,12 +148,12 @@ marge_par_produit = ventes_df.groupby('nom_produit')['marge'].sum().nlargest(5)
 print("\n7. Top 5 produits par marge:")
 print(marge_par_produit.to_string())
 
-## 3. Analyse temporelle ------------------------------------------------------
+
 print("\n" + "="*50)
 print("ANALYSE TEMPORELLE")
 print("="*50)
 
-# Ventes par année (déjà extraites)
+# Ventes par année
 print("\n8. Chiffre d'affaires par année:")
 print(ventes_par_annee.to_string(index=False))
 
@@ -168,7 +166,7 @@ print(ventes_par_annee[['annee', 'chiffre_affaires', 'evolution_pct']].to_string
 meilleur_mois = ventes_par_mois.loc[ventes_par_mois['chiffre_affaires'].idxmax()]
 print(f"\n10. Meilleur mois : {meilleur_mois['mois']} (CA: {meilleur_mois['chiffre_affaires']:,.2f} FCFA)")
 
-## 4. Analyse clients ---------------------------------------------------------
+# Analyse clients
 print("\n" + "="*50)
 print("ANALYSE CLIENTS")
 print("="*50)
@@ -183,7 +181,7 @@ top_clients_ca = ventes_df.groupby(['nom_client', 'prenom_client'])['montant_tot
 print("\n12. Top 5 clients (chiffre d'affaires):")
 print(top_clients_ca.to_string())
 
-## 5. Analyse par catégorie --------------------------------------------------
+# Analyse par catégorie 
 print("\n" + "="*50)
 print("ANALYSE PAR CATÉGORIE")
 print("="*50)
@@ -209,7 +207,15 @@ print(ventes_df['montant_total'].describe().to_string())
 print("\n16. Statistiques des quantités vendues:")
 print(ventes_df['quantite'].describe().to_string())
 
-# Préparation pour la visualisation ------------------------------------------
+#nouvelles lignes 
+
+
+# Calcul du panier moyen mensuel et annuel
+ventes_par_mois['panier_moyen'] = ventes_par_mois['chiffre_affaires'] / ventes_par_mois['nombre_ventes']
+ventes_par_annee['panier_moyen'] = ventes_par_annee['chiffre_affaires'] / ventes_par_annee['nombre_ventes']
+
+
+
 # Création d'un dictionnaire avec tous les résultats
 resultats_analyse = {
     'ca_total': ca_total,

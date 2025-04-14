@@ -189,9 +189,10 @@ for i in range(1, 801):  # 800 ventes
     cursor.execute("SELECT prix_unitaire FROM Produits WHERE id_produit = ?;", (id_produit,))
     prix_unitaire = cursor.fetchone()[0]
     
-    # Quantité avec une distribution qui favorise les petites quantités
+    # On veut juste favoriser les petites quantités
+    # On utilise une distribution exponentielle pour simuler la quantité achetée
     quantite = int(np.random.exponential(scale=1.5)) + 1
-    if quantite > 15:  # On limite à 15 max
+    if quantite > 15:  # On limite la quantité à 15
         quantite = 15
     
     # Montant total avec possibilité de petite réduction aléatoire
@@ -214,7 +215,7 @@ cursor.executemany(
     ventes
 )
 
-# Validation des changements et fermeture de la connexion
+
 conn.commit()
 conn.close()
 

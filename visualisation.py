@@ -51,7 +51,7 @@ def plot_repartition_ventes():
     top_produits = resultats_analyse['top_produits_ca'].head(10)
     autres = resultats_analyse['top_produits_ca'][10:].sum()
     
-    # Préparation des données
+    
     data = top_produits.to_frame('montant_total').reset_index()
     data.loc[len(data)] = ['Autres produits', autres]
     
@@ -167,6 +167,78 @@ def plot_top_clients():
     plt.tight_layout()
     save_plot(fig, "top_clients_ca.png")
 
+#nouvelles lignes
+
+def plot_panier_moyen():
+    """Évolution du panier moyen sur la période"""
+    data = resultats_analyse['ventes_par_mois'].copy()
+    data['mois'] = pd.to_datetime(data['mois'])
+    
+    fig, ax = plt.subplots(figsize=(14, 7))
+    sns.lineplot(
+        data=data,
+        x='mois',
+        y='panier_moyen',
+        marker='o',
+        color='darkorange',
+        linewidth=2.5
+    )
+    
+    ax.set_title("Évolution du panier moyen mensuel", fontsize=16, fontweight='bold')
+    ax.set_xlabel("Mois", fontsize=12)
+    ax.set_ylabel("Panier moyen (FCFA)", fontsize=12)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,.0f}".format(x)))
+    
+    save_plot(fig, "evolution_panier_moyen.png")
+
+def plot_quantites_annuelles():
+    """Quantités totales vendues par année"""
+    data = resultats_analyse['ventes_par_annee']
+    
+    fig, ax = plt.subplots(figsize=(12, 7))
+    sns.barplot(
+        data=data,
+        x='annee',
+        y='total_articles_vendus',
+        palette='mako'
+    )
+    
+    ax.set_title("Quantités totales vendues par année", fontsize=16, fontweight='bold')
+    ax.set_xlabel("Année", fontsize=12)
+    ax.set_ylabel("Nombre d'articles vendus", fontsize=12)
+    
+    # Ajout des étiquettes de valeur
+    for p in ax.patches:
+        ax.annotate(f"{int(p.get_height()):,}", 
+                    (p.get_x() + p.get_width()/2., p.get_height()), 
+                    ha='center', va='center', 
+                    xytext=(0, 10), 
+                    textcoords='offset points')
+    
+    save_plot(fig, "quantites_annuelles.png")
+
+def plot_top_produits_quantite():
+    """Graphique des produits les plus vendus par quantité"""
+    data = resultats_analyse['top_produits_quantite'].head(10)
+    
+    fig, ax = plt.subplots(figsize=(14, 8))
+    sns.barplot(
+        x=data.values,
+        y=data.index,
+        palette='viridis',
+        ax=ax
+    )
+    
+    ax.set_title("Top 10 des produits les plus vendus (quantité)", fontsize=16, fontweight='bold')
+    ax.set_xlabel("Quantité totale vendue", fontsize=12)
+    ax.set_ylabel("Produit", fontsize=12)
+    
+    # Ajout des étiquettes de valeur
+    for i, v in enumerate(data.values):
+        ax.text(v + 5, i, str(v), color='black', va='center')
+    
+    save_plot(fig, "top_produits_quantite.png")
+
 
 
 # Exécution de toutes les visualisations
@@ -177,5 +249,10 @@ if __name__ == "__main__":
     plot_analyse_categories()
     plot_evolution_annuelle()
     plot_top_clients()
+
+    plot_panier_moyen()
+    plot_quantites_annuelles()
+    plot_top_produits_quantite()
+    
     print("Création des visualisations terminée.")
     print("\nToutes les visualisations ont été créées avec succès!")

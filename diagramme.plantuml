@@ -1,0 +1,47 @@
+@startuml
+
+' Déclaration des classes (tables)
+
+class Categories {
+  +id_categorie : INTEGER
+  +nom_categorie : TEXT
+  +description : TEXT
+}
+
+class Produits {
+  +id_produit : INTEGER
+  +nom_produit : TEXT
+  +id_categorie : INTEGER
+  +prix_unitaire : REAL
+  +stock : INTEGER
+  +description : TEXT
+}
+
+class Clients {
+  +id_client : INTEGER
+  +nom : TEXT
+  +prenom : TEXT
+  +email : TEXT
+  +telephone : TEXT
+  +ville : TEXT
+  +date_inscription : TEXT
+  +frequence_achat : TEXT
+}
+
+class Ventes {
+  +id_vente : INTEGER
+  +id_produit : INTEGER
+  +id_client : INTEGER
+  +date_vente : TEXT
+  +quantite : INTEGER
+  +montant_total : REAL
+  +mode_paiement : TEXT
+}
+
+' Relations entre les classes
+
+Produits --> Categories : appartient à >
+Ventes --> Produits : concerne >
+Ventes --> Clients : faite à >
+
+@enduml
